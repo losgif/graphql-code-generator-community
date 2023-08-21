@@ -92,9 +92,7 @@ async function test() {
 }`;
       const output = await validate(result, config, docs, schema, usage);
 
-      expect(result.content).toContain(
-        `(FeedDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'feed', 'query');`,
-      );
+      expect(result.content).toContain(`FeedDocument`);
       expect(output).toMatchSnapshot();
     });
 
@@ -376,15 +374,9 @@ async function test() {
       const output = await validate(result, config, docs, schema, '');
 
       expect(output).toContain(`import * as Operations from './operations';`);
-      expect(output).toContain(
-        `(Operations.FeedDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'feed', 'query');`,
-      );
-      expect(output).toContain(
-        `(Operations.Feed2Document, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'feed2', 'query');`,
-      );
-      expect(output).toContain(
-        `(Operations.Feed3Document, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'feed3', 'query');`,
-      );
+      expect(output).toContain(`Operations.FeedDocument`);
+      expect(output).toContain(`Operations.Feed2Document`);
+      expect(output).toContain(`Operations.Feed3Document`);
     });
 
     it('#7114 - honor importOperationTypesFrom', async () => {

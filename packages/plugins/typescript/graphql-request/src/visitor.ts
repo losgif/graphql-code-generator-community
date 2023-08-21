@@ -127,20 +127,34 @@ export class GraphQLRequestVisitor extends ClientSideBaseVisitor<
           }
           return `${operationName}(variables${optionalVariables ? '?' : ''}: ${
             o.operationVariablesTypes
-          }, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: ${
+          }, signal?: AbortSignal, requestHeaders?: GraphQLClientRequestHeaders): Promise<{ data: ${
             o.operationResultType
           }; extensions?: ${this.config.extensionsType}; headers: Headers; status: number; }> {
-    return withWrapper((wrappedRequestHeaders) => client.rawRequest<${
-      o.operationResultType
-    }>(${docArg}, variables, {...requestHeaders, ...wrappedRequestHeaders}), '${operationName}', '${operationType}');
+    return withWrapper((wrappedRequestHeaders) => client.rawRequest<${o.operationResultType}>({
+        query: ${docArg},
+        signal: signal as Dom.RequestInit['signal'],
+        variables,
+        requestHeaders: {
+         ...requestHeaders,
+         ...wrappedRequestHeaders,
+        },
+      }), '${operationName}', '${operationType}');
 }`;
         }
         return `${operationName}(variables${optionalVariables ? '?' : ''}: ${
           o.operationVariablesTypes
-        }, requestHeaders?: GraphQLClientRequestHeaders): Promise<${o.operationResultType}> {
-  return withWrapper((wrappedRequestHeaders) => client.request<${
-    o.operationResultType
-  }>(${docVarName}, variables, {...requestHeaders, ...wrappedRequestHeaders}), '${operationName}', '${operationType}');
+        }, signal?: AbortSignal, requestHeaders?: GraphQLClientRequestHeaders): Promise<${
+          o.operationResultType
+        }> {
+  return withWrapper((wrappedRequestHeaders) => client.request<${o.operationResultType}>({
+      document: ${docVarName},
+      signal: signal as Dom.RequestInit['signal'],
+      variables,
+      requestHeaders: {
+       ...requestHeaders,
+       ...wrappedRequestHeaders,
+      },
+    }), '${operationName}', '${operationType}');
 }`;
       })
       .filter(Boolean)
